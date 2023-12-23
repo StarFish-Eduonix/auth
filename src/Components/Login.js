@@ -1,10 +1,14 @@
-import React,{useState} from "react"; 
+import React,{useState, useContext} from "react"; 
 import axios from "axios";
+import InstaContext from "../context/InstaContext";
+import { useNavigate } from "react-router-dom";
 
-const Login = ({setToken}) => {
+const Login = () => {
     
     const [user, setUser] = useState({email:"",password:""});
+    const {setToken} = useContext(InstaContext);
 
+    const navigate = useNavigate();
 
 
     function updateUser(e){
@@ -21,7 +25,6 @@ const Login = ({setToken}) => {
             return
          }
 
-
         try{
             const response =  await axios.post("https://instagram-express-app.vercel.app/api/auth/login",{
                 email:user.email,
@@ -30,6 +33,12 @@ const Login = ({setToken}) => {
             console.log("success",response.data)
            
             setToken(response.data.data.token)
+            // add to Localstorage:
+            let json_token = JSON.stringify(response.data.data.token)
+            localStorage.setItem("token",json_token)
+
+            alert("Login Successful")
+            navigate("/dashboard")
         }
 
         catch(error){
